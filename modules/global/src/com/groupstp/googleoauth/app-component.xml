@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               dependsOn="com.haulmont.cuba">
+    <module blocks="*"
+            name="global">
+        <artifact appJar="true"
+                  name="oauth-global"/>
+        <property name="cuba.persistenceConfig"
+                  value="+com/groupstp/googleoauth/persistence.xml"/>
+        <property name="cuba.metadataConfig"
+                  value="+com/groupstp/googleoauth/metadata.xml"/>
+        <property name="cuba.viewsConfig"
+                  value="+com/groupstp/googleoauth/views.xml"/>
+    </module>
+    <module blocks="core"
+            dependsOn="global"
+            name="core">
+        <artifact appJar="true"
+                  name="oauth-core"/>
+        <property name="cuba.springContextConfig"
+                  value="+com/groupstp/googleoauth/spring.xml"/>
+        <property name="cuba.mainMessagePack"
+                  value="+com.groupstp.googleoauth.core"/>
+    </module>
+    <module blocks="web"
+            dependsOn="global"
+            name="web">
+        <artifact appJar="true"
+                  name="oauth-web"/>
+        <artifact classifier="web"
+                  configuration="webcontent"
+                  ext="zip"
+                  name="oauth-web"/>
+        <property name="cuba.springContextConfig"
+                  value="+com/groupstp/googleoauth/web-spring.xml"/>
+        <property name="cuba.dispatcherSpringContextConfig"
+                  value="+com/groupstp/googleoauth/web-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig"
+                  value="+com/groupstp/googleoauth/web-screens.xml"/>
+        <property name="cuba.menuConfig"
+                  value="+com/groupstp/googleoauth/web-menu.xml"/>
+        <property name="cuba.permissionConfig"
+                  value="+com/groupstp/googleoauth/web-permissions.xml"/>
+        <property name="cuba.mainMessagePack"
+                  value="+com.groupstp.googleoauth.web"/>
+    </module>
+</app-component>

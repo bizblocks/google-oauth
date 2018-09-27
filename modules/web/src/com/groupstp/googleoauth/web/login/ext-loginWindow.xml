@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.groupstp.googleoauth.web.login.ExtAppLoginWindow"
+        extends="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"
+        messagesPack="com.groupstp.googleoauth.web.login">
+    <dialogMode height="600"
+                width="800"/>
+    <layout>
+        <vbox id="loginWrapper">
+            <vbox id="loginMainBox">
+                <vbox margin="true,false,false,false"
+                      align="MIDDLE_CENTER">
+                    <button id="googleBtn"
+                            caption="msg://signInMessage"
+                            invoke="signInGoogle"/>
+                </vbox>
+            </vbox>
+        </vbox>
+    </layout>
+</window>
