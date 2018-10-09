@@ -8,11 +8,11 @@
     <layout>
         <vbox id="loginWrapper">
             <vbox id="loginMainBox">
-                <vbox margin="true,false,false,false"
-                      align="MIDDLE_CENTER">
+                <vbox id="loginForm">
                     <button id="googleBtn"
                             caption="msg://signInMessage"
-                            invoke="signInGoogle"/>
+                            invoke="signInGoogle"
+                            stylename="c-login-submit-button"/>
                 </vbox>
             </vbox>
         </vbox>
