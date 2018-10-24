@@ -6,7 +6,7 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 
-@Source(type = SourceType.APP)
+@Source(type = SourceType.DATABASE)
 public interface GoogleConfig extends Config {
 
     @Default("")
