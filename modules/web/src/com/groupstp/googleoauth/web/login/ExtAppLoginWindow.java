@@ -1,5 +1,7 @@
 package com.groupstp.googleoauth.web.login;
 
+import com.groupstp.googleoauth.data.GoogleUserData;
+import com.groupstp.googleoauth.data.OAuth2ResponseType;
 import com.groupstp.googleoauth.service.GoogleService;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -54,7 +56,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
 
         this.redirectUri = Page.getCurrent().getLocation();
 
-        String loginUrl = googleService.getLoginUrl(globalConfig.getWebAppUrl(), GoogleService.OAuth2ResponseType.CODE);
+        String loginUrl = googleService.getLoginUrl(globalConfig.getWebAppUrl(), OAuth2ResponseType.CODE);
         Page.getCurrent()
                 .setLocation(loginUrl);
     }
@@ -66,9 +68,8 @@ public class ExtAppLoginWindow extends AppLoginWindow {
                 try {
                     String code = request.getParameter("code");
 
-                    GoogleService.GoogleUserData userData = googleService.getUserData(globalConfig.getWebAppUrl(), code);
-
-                    User user = socialRegistrationService.findUser(userData.getEmail());
+                    GoogleUserData userData = googleService.getUserData(globalConfig.getWebAppUrl(), code);
+                    User user = socialRegistrationService.findUser(userData);
                     if (user == null) {
                         throw new UserNotFoundException("User not found with email: " + userData.getEmail());
                     }

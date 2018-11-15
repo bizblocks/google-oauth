@@ -14,6 +14,8 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.groupstp.googleoauth.config.GoogleConfig;
+import com.groupstp.googleoauth.data.GoogleUserData;
+import com.groupstp.googleoauth.data.OAuth2ResponseType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.slf4j.Logger;
@@ -116,7 +118,11 @@ public class GoogleServiceBean implements GoogleService {
 
         String email = emails.get(0).getValue();
         String id = person.getId();
-        String name = person.getName().getFormatted();
+        String name = person.getDisplayName();
+        String firstName = person.getName() == null ? null : person.getName().getGivenName();
+        String middleName = person.getName() == null ? null : person.getName().getMiddleName();
+        String lastName = person.getName() == null ? null : person.getName().getFamilyName();
+        String domain = person.getDomain();
 
         try {
             flow.getCredentialDataStore().set(id, new StoredCredential(credential));
@@ -124,7 +130,7 @@ public class GoogleServiceBean implements GoogleService {
             log.error("Can't set credential to DataStore", e);
         }
 
-        return new GoogleUserData(id, name, email);
+        return new GoogleUserData(id, name, firstName, middleName, lastName, email, domain);
     }
 
     // For get google credentials to using GoogleApi
