@@ -6,7 +6,10 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
     <!-- Annotation-based beans -->
-    <context:component-scan base-package="com.groupstp.googleoauth"/>
+    <context:component-scan base-package="com.groupstp.googleoauth">
+        <context:exclude-filter type="regex" expression="com\.groupstp\.googleoauth\.restapi\..*"/>
+    </context:component-scan>
+
     <bean class="com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator">
         <property name="remoteServices">
         <map>
