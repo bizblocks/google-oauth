@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.function.Supplier;
@@ -36,6 +37,8 @@ import java.util.function.Supplier;
 @RequestMapping("/google")
 public class GoogleAuthenticationController {
 
+    private static GoogleAuthenticationController instance;
+
     @Inject
     private Configuration configuration;
     @Inject
@@ -48,6 +51,39 @@ public class GoogleAuthenticationController {
     private GoogleService googleService;
     @Inject
     private SocialRegistrationService socialRegistrationService;
+
+    public static GoogleAuthenticationController get() {
+        return instance;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public MessageTools getMessageTools() {
+        return messageTools;
+    }
+
+    public OAuthTokenIssuer getOAuthTokenIssuer() {
+        return oAuthTokenIssuer;
+    }
+
+    public TrustedClientService getTrustedClientService() {
+        return trustedClientService;
+    }
+
+    public GoogleService getGoogleService() {
+        return googleService;
+    }
+
+    public SocialRegistrationService getSocialRegistrationService() {
+        return socialRegistrationService;
+    }
+
+    @PostConstruct
+    private void init() {
+        instance = this;
+    }
 
     /**
      * @param url url of redirection
