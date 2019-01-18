@@ -2,9 +2,11 @@ package com.groupstp.googleoauth.web;
 
 import com.groupstp.googleoauth.data.GoogleUserData;
 import com.groupstp.googleoauth.restapi.GoogleAuthenticationController;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.Sha1EncryptionModule;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -18,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.RequestContextFilter;
 
-import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,8 +46,7 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
 
     protected static final String STATIC_SALT = "0d6a308f-61e2-4523-8abc-d372d209c4f1";
 
-    @Inject
-    protected Sha1EncryptionModule encryptionModule;
+    protected EncryptionModule encryptionModule;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -65,7 +65,7 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
                     log.error("Missing redirect uri hash");
                     throw new ServletException("Redirect uri not found");
                 }
-                String currentHash = encryptionModule.getHash(uri, STATIC_SALT);
+                String currentHash = getEncryptionModule().getHash(uri, STATIC_SALT);
                 if (!Objects.equals(hash, currentHash)) {
                     log.error("Redirect uri hash and calculated hash are not the same");
                     throw new ServletException("Redirect uri not found");
@@ -113,7 +113,7 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
             if (!StringUtils.isEmpty(uri)) {
                 String loginUrl = getAsPrivilegedUser(() -> GoogleAuthenticationController.get().getGoogleService().getLoginUrl(getRedirectUrl()));
                 httpSession.setAttribute(REDIRECT_URI_ATTRIBUTE, uri);
-                httpSession.setAttribute(PARAMETER_REDIRECT_URI_HASH, encryptionModule.getHash(uri, STATIC_SALT));
+                httpSession.setAttribute(PARAMETER_REDIRECT_URI_HASH, getEncryptionModule().getHash(uri, STATIC_SALT));
                 httpResponse.setStatus(HttpStatus.FOUND.value());
                 httpResponse.sendRedirect(loginUrl);
 
@@ -122,7 +122,7 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
         });
     }
 
-    private <T> T getAsPrivilegedUser(Supplier<T> supplier) {
+    protected <T> T getAsPrivilegedUser(Supplier<T> supplier) {
         UserSession session;
         try {
             WebAuthConfig webAuthConfig = GoogleAuthenticationController.get().getConfiguration().getConfig(WebAuthConfig.class);
@@ -133,7 +133,14 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
         return AppContext.withSecurityContext(new SecurityContext(session), supplier::get);
     }
 
-    private String getRedirectUrl() {
+    protected EncryptionModule getEncryptionModule() {
+        if (encryptionModule == null) {
+            encryptionModule = AppBeans.get(Sha1EncryptionModule.class);
+        }
+        return encryptionModule;
+    }
+
+    protected String getRedirectUrl() {
         GlobalConfig globalConfig = GoogleAuthenticationController.get().getConfiguration().getConfig(GlobalConfig.class);
         String appUrl = globalConfig.getWebAppUrl();
         if (appUrl.endsWith("/")) {
