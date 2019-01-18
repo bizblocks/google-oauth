@@ -1,11 +1,11 @@
 package com.groupstp.googleoauth.web;
 
 import com.groupstp.googleoauth.data.GoogleUserData;
-import com.groupstp.googleoauth.data.OAuth2ResponseType;
 import com.groupstp.googleoauth.restapi.GoogleAuthenticationController;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.encryption.Sha1EncryptionModule;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -18,12 +18,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.RequestContextFilter;
 
+import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -39,6 +41,12 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
     private static final String REDIRECT_URI_ATTRIBUTE = "cuba.google.redirect";
     private static final String PARAMETER_CODE = "code";
     private static final String PARAMETER_REDIRECT_URI = "redirect_uri";
+    private static final String PARAMETER_REDIRECT_URI_HASH = "hash_code";
+
+    protected static final String STATIC_SALT = "0d6a308f-61e2-4523-8abc-d372d209c4f1";
+
+    @Inject
+    protected Sha1EncryptionModule encryptionModule;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -52,6 +60,18 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
                     log.error("Missing redirect uri from session");
                     throw new ServletException("Redirect uri not found");
                 }
+                String hash = (String) httpSession.getAttribute(PARAMETER_REDIRECT_URI_HASH);
+                if (StringUtils.isEmpty(hash)) {
+                    log.error("Missing redirect uri hash");
+                    throw new ServletException("Redirect uri not found");
+                }
+                String currentHash = encryptionModule.getHash(uri, STATIC_SALT);
+                if (!Objects.equals(hash, currentHash)) {
+                    log.error("Redirect uri hash and calculated hash are not the same");
+                    throw new ServletException("Redirect uri not found");
+                }
+
+                log.debug("Read redirect uri from session {}", uri);
 
                 User user;
                 try {
@@ -91,10 +111,13 @@ public class GoogleAuthenticationFilter extends RequestContextFilter implements 
 
             String uri = httpRequest.getParameter(PARAMETER_REDIRECT_URI);
             if (!StringUtils.isEmpty(uri)) {
-                String loginUrl = getAsPrivilegedUser(() -> GoogleAuthenticationController.get().getGoogleService().getLoginUrl(getRedirectUrl(), OAuth2ResponseType.CODE_TOKEN));
+                String loginUrl = getAsPrivilegedUser(() -> GoogleAuthenticationController.get().getGoogleService().getLoginUrl(getRedirectUrl()));
                 httpSession.setAttribute(REDIRECT_URI_ATTRIBUTE, uri);
+                httpSession.setAttribute(PARAMETER_REDIRECT_URI_HASH, encryptionModule.getHash(uri, STATIC_SALT));
                 httpResponse.setStatus(HttpStatus.FOUND.value());
                 httpResponse.sendRedirect(loginUrl);
+
+                log.debug("Requested remote login. Login url: {}. Redirect uri: {}", loginUrl, uri);
             }
         });
     }

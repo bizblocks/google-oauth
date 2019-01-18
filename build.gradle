@@ -32,7 +32,7 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'com.groupstp.googleoauth'
-        version = "0.5"
+        version = "0.6"
         isSnapshot = true
     }
     tomcat {

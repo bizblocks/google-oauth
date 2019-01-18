@@ -1,7 +1,6 @@
 package com.groupstp.googleoauth.service;
 
 import com.groupstp.googleoauth.data.GoogleUserData;
-import com.groupstp.googleoauth.data.OAuth2ResponseType;
 
 /**
  * Google authentication service
@@ -13,11 +12,9 @@ public interface GoogleService {
     /**
      * Get Google login page url
      *
-     * @param appUrl       current application url.
-     * @param responseType type of response login.
      * @return remote Google login url.
      */
-    String getLoginUrl(String appUrl, OAuth2ResponseType responseType);
+    String getLoginUrl(String appUrl);
 
     /**
      * Retrieve Google authentication data by code
@@ -27,4 +24,12 @@ public interface GoogleService {
      * @return authenticated user data
      */
     GoogleUserData getUserData(String appUrl, String code);
+
+    /**
+     * Retrieve Google authentication data by already defined access token
+     *
+     * @param accessToken direct access token
+     * @return authenticated user data
+     */
+    GoogleUserData getUserData(String accessToken);
 }

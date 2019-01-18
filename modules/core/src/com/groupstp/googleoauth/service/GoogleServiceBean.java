@@ -2,7 +2,6 @@ package com.groupstp.googleoauth.service;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -15,9 +14,9 @@ import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.groupstp.googleoauth.config.GoogleConfig;
 import com.groupstp.googleoauth.data.GoogleUserData;
-import com.groupstp.googleoauth.data.OAuth2ResponseType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +41,7 @@ public class GoogleServiceBean implements GoogleService {
     private NetHttpTransport transport;
     private AuthorizationCodeFlow flow;
 
-    // TODO rewrite sh1t
+    // TODO rewrite
     // Coded that way because @EventListener annotation don't work
     // https://github.com/cuba-platform/cuba/issues/771
     @PostConstruct
@@ -81,9 +79,8 @@ public class GoogleServiceBean implements GoogleService {
         AppContext.addListener(listener);
     }
 
-
     @Override
-    public String getLoginUrl(String appUrl, OAuth2ResponseType responseType) {
+    public String getLoginUrl(String appUrl) {
         return flow.newAuthorizationUrl()
                 .setClientId(config.getGoogleAppId())
                 .setScopes(scopes)
@@ -93,14 +90,27 @@ public class GoogleServiceBean implements GoogleService {
 
     @Override
     public GoogleUserData getUserData(String appUrl, String code) {
-        Person person;
-        Credential credential;
         try {
             TokenResponse tokenResponse = flow.newTokenRequest(code)
                     .setRedirectUri(appUrl)
                     .execute();
-            String accessToken = tokenResponse.getAccessToken();
-            credential = new GoogleCredential()
+            return getUserData(tokenResponse.getAccessToken());
+        } catch (Exception e) {
+            log.error("Can't get user data", e);
+            return null;
+        }
+    }
+
+    @Override
+    public GoogleUserData getUserData(String accessToken) {
+        if (StringUtils.isEmpty(accessToken)) {
+            log.warn("Access token is empty");
+            return null;
+        }
+
+        Person person;
+        try {
+            Credential credential = new GoogleCredential()
                     .setAccessToken(accessToken);
             Plus plus = new Plus.Builder(transport, jsonFactory, credential)
                     .build();
@@ -124,20 +134,6 @@ public class GoogleServiceBean implements GoogleService {
         String lastName = person.getName() == null ? null : person.getName().getFamilyName();
         String domain = person.getDomain();
 
-        try {
-            flow.getCredentialDataStore().set(id, new StoredCredential(credential));
-        } catch (IOException e) {
-            log.error("Can't set credential to DataStore", e);
-        }
-
         return new GoogleUserData(id, name, firstName, middleName, lastName, email, domain);
     }
-
-    // For get google credentials to using GoogleApi
-    // Credential credential = googleService.getCodeFlow().loadCredential(userId);
-    @SuppressWarnings({"", "unused"})
-    public AuthorizationCodeFlow getCodeFlow() {
-        return flow;
-    }
-
 }

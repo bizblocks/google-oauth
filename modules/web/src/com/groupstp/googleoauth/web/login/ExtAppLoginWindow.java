@@ -1,7 +1,6 @@
 package com.groupstp.googleoauth.web.login;
 
 import com.groupstp.googleoauth.data.GoogleUserData;
-import com.groupstp.googleoauth.data.OAuth2ResponseType;
 import com.groupstp.googleoauth.service.GoogleService;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -56,7 +55,7 @@ public class ExtAppLoginWindow extends AppLoginWindow {
 
         this.redirectUri = Page.getCurrent().getLocation();
 
-        String loginUrl = googleService.getLoginUrl(globalConfig.getWebAppUrl(), OAuth2ResponseType.CODE);
+        String loginUrl = googleService.getLoginUrl(globalConfig.getWebAppUrl());
         Page.getCurrent()
                 .setLocation(loginUrl);
     }
