@@ -37,14 +37,14 @@ import java.util.function.Supplier;
 public class GoogleAuthenticationFilter extends RequestContextFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(GoogleAuthenticationFilter.class);
 
-    public static final String URL_PATH = "/google/login";
+    public static String URL_PATH = "/google/login";
 
-    private static final String REDIRECT_URI_ATTRIBUTE = "cuba.google.redirect";
-    private static final String PARAMETER_CODE = "code";
-    private static final String PARAMETER_REDIRECT_URI = "redirect_uri";
-    private static final String PARAMETER_REDIRECT_URI_HASH = "hash_code";
+    protected static String REDIRECT_URI_ATTRIBUTE = "cuba.google.redirect";
+    protected static String PARAMETER_CODE = "code";
+    protected static String PARAMETER_REDIRECT_URI = "redirect_uri";
+    protected static String PARAMETER_REDIRECT_URI_HASH = "hash_code";
 
-    protected static final String STATIC_SALT = "0d6a308f-61e2-4523-8abc-d372d209c4f1";
+    protected static String STATIC_SALT = "0d6a308f-61e2-4523-8abc-d372d209c4f1";
 
     protected EncryptionModule encryptionModule;
 
