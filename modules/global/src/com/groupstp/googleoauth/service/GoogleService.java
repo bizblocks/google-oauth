@@ -31,5 +31,13 @@ public interface GoogleService {
      * @param accessToken direct access token
      * @return authenticated user data
      */
-    GoogleUserData getUserData(String accessToken);
+    GoogleUserData getUserDataByAccessToken(String accessToken);
+
+    /**
+     * Retrieve Google authentication data by already defined id token
+     *
+     * @param idToken direct id token
+     * @return authenticated user data
+     */
+    GoogleUserData getUserDataByIdToken(String idToken);
 }

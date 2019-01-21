@@ -23,6 +23,9 @@ public class LoginCredential implements Serializable {
     @JsonProperty("access_token")
     private String accessToken;
 
+    @JsonProperty("id_token")
+    private String idToken;
+
 
     public String getRedirectUrl() {
         return redirectUrl;
@@ -46,5 +49,13 @@ public class LoginCredential implements Serializable {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
     }
 }

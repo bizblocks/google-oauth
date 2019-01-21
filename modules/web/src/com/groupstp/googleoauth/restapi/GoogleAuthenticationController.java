@@ -113,7 +113,9 @@ public class GoogleAuthenticationController {
             User user = getAsPrivilegedUser(() -> {
                 GoogleUserData userData;
                 if (!StringUtils.isEmpty(dto.getAccessToken())) {
-                    userData = googleService.getUserData(dto.getAccessToken());
+                    userData = googleService.getUserDataByAccessToken(dto.getAccessToken());
+                } else if (!StringUtils.isEmpty(dto.getIdToken())) {
+                    userData = googleService.getUserDataByIdToken(dto.getIdToken());
                 } else {
                     if (StringUtils.isEmpty(dto.getRedirectUrl()) || StringUtils.isEmpty(dto.getCode())) {
                         throw new RestAPIException("Error", "Code and original redirect url are required", HttpStatus.BAD_REQUEST);
