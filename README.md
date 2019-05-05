@@ -221,13 +221,13 @@ public class ExtLoginWindow extends AppLoginWindow {
 потребуется конечные данные для дополнительной валидации в IDP и выдачи доступа в самой системе SP. Для получения последнего необходимо будет направить `POST` запрос на *url_сервера:порт/app/rest/google/login* с json телом:
 ```
 {
-   "access_token":"токен_доступа",
+   "access_token":"токен_доступа"
 }
 ```
 или
 ```
 {
-   "id_token":"идентификационный_токен_внешней_системы",
+   "id_token":"идентификационный_токен_внешней_системы"
 }
 ```
 в зависимости от типа используемой авторизации. Далее SP произведет валидацию и процесс внутренней авторизации, в случае успеха, так же в результате будут выданы конечные данные для входа.
@@ -239,7 +239,7 @@ public class ExtLoginWindow extends AppLoginWindow {
 Преимущественно вся логика обработки данных для входа извне находится в классах
 
 ```
-com.groupstp.googleoauth.restapiюGoogleAuthenticationController
+com.groupstp.googleoauth.restapi.GoogleAuthenticationController
 ```
 и
 ```
@@ -248,7 +248,7 @@ com.groupstp.googleoauth.web.GoogleAuthenticationFilter
 
 Логика обработки приходящих данных (валидация, считывание внешних данных о пользователях) для IDP Google находится в классеЖ
 ```
-com.groupstp.googleoauth.serviceюGoogleServiceBean
+com.groupstp.googleoauth.service.GoogleServiceBean
 ```
 
 Логика по поиску и созданию пользователя расположена в классе:
