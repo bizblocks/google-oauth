@@ -37,7 +37,7 @@ public class SocialRegistrationServiceBean implements SocialRegistrationService 
 
         // Find existing user
         TypedQuery<User> query = em.createQuery(
-                "select u from sec$User u where u.loginLowerCase = :email and (u.active = true or u.active is null)",
+                "select u from sec$User u where u.email = :email and (u.active = true or u.active is null)",
                 User.class);
         query.setParameter("email", data.getEmail() == null ? StringUtils.EMPTY : data.getEmail().toLowerCase());
         query.setViewName(View.LOCAL);
