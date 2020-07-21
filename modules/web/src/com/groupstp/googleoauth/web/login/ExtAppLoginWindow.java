@@ -2,6 +2,7 @@ package com.groupstp.googleoauth.web.login;
 
 import com.groupstp.googleoauth.data.GoogleUserData;
 import com.groupstp.googleoauth.service.GoogleService;
+import com.groupstp.googleoauth.service.SocialRegistrationService;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.UIAccessor;
@@ -13,7 +14,6 @@ import com.haulmont.cuba.web.security.ExternalUserCredentials;
 import com.vaadin.server.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.groupstp.googleoauth.service.SocialRegistrationService;
 
 import javax.inject.Inject;
 import java.io.IOException;
