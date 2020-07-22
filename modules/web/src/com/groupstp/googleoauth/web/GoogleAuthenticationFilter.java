@@ -2,6 +2,7 @@ package com.groupstp.googleoauth.web;
 
 import com.groupstp.googleoauth.data.GoogleUserData;
 import com.groupstp.googleoauth.restapi.GoogleAuthenticationController;
+import com.haulmont.addon.restapi.api.auth.OAuthTokenIssuer;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -12,7 +13,6 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
-import com.haulmont.restapi.auth.OAuthTokenIssuer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
